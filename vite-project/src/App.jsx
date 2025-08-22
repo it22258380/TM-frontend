@@ -15,7 +15,7 @@ function App() {
        <Routes>
            
            <Route path="/register" element={<UserRegister />} />
-           <Route path="/login" element={<Login />} />
+           <Route path="/" element={<Login />} />
            <Route path="/AddTask" element={<AddTask />} />
            <Route path="/list" element={<TaskList />} />
 

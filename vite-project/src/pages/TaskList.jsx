@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import TaskCard from "./TaskCard";
-import AddTask from "./AddTask";
+import TaskCard from "../components/TaskCard";
+import { Link } from "react-router-dom";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -12,9 +12,11 @@ export default function TaskList() {
   const [sortBy, setSortBy] = useState("due_date");
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   const itemsPerPage = 6;
 
+  // Fetch tasks
   useEffect(() => {
     const fetchTasks = async () => {
       const token = localStorage.getItem("token");
@@ -35,7 +37,7 @@ export default function TaskList() {
     fetchTasks();
   }, []);
 
-  // 🔎 Apply search, filter, sort
+  // Apply search, filter, sort
   useEffect(() => {
     let data = [...tasks];
 
@@ -67,7 +69,7 @@ export default function TaskList() {
     }
 
     setFiltered(data);
-    setCurrentPage(1); // reset page when filters change
+    setCurrentPage(1);
   }, [tasks, search, priorityFilter, statusFilter, sortBy]);
 
   // Pagination
@@ -75,6 +77,7 @@ export default function TaskList() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentTasks = filtered.slice(startIndex, startIndex + itemsPerPage);
 
+  // Delete
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     await axios.delete(`http://localhost:5000/api/tasks/deletetask/${id}`, {
@@ -83,11 +86,16 @@ export default function TaskList() {
     setTasks(tasks.filter((t) => t._id !== id));
   };
 
+  // Edit
   const handleEdit = (task) => {
-    console.log("Edit clicked:", task);
-    // open edit modal here
+    setEditingTask(task);
   };
 
+  const closeEditModal = () => {
+    setEditingTask(null);
+  };
+
+  // Add Task
   const handleTaskAdded = (newTask) => {
     setTasks([...tasks, newTask]);
     setShowAddTask(false);
@@ -135,25 +143,116 @@ export default function TaskList() {
           <option value="priority">Sort by Priority</option>
         </select>
 
-        <button
-          onClick={() => setShowAddTask(true)}
-          className="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-        >
-          + Add New Task
-        </button>
+        <Link to="/AddTask">
+          <button className="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+            + Add New Task
+          </button>
+        </Link>
       </div>
 
-      {/* Add Task Modal */}
-      {showAddTask && (
+      {/* Edit Task Modal */}
+      {editingTask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
-            <AddTask onTaskAdded={handleTaskAdded} />
-            <button
-              onClick={() => setShowAddTask(false)}
-              className="mt-4 w-full bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 transition"
+            <h2 className="text-xl font-bold mb-4">Edit Task</h2>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const token = localStorage.getItem("token");
+
+                try {
+                  const res = await axios.put(
+                    `http://localhost:5000/api/tasks/update/${editingTask._id}`,
+                    editingTask,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                  );
+                  setTasks(
+                    tasks.map((t) =>
+                      t._id === editingTask._id ? res.data.task : t
+                    )
+                  );
+                  closeEditModal();
+                } catch (err) {
+                  console.error("Error updating task:", err.response?.data || err.message);
+                }
+              }}
+              className="space-y-4"
             >
-              Cancel
-            </button>
+              <input
+                type="text"
+                value={editingTask.title}
+                onChange={(e) =>
+                  setEditingTask({ ...editingTask, title: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2"
+                placeholder="Title"
+                required
+              />
+
+              <textarea
+                value={editingTask.description}
+                onChange={(e) =>
+                  setEditingTask({ ...editingTask, description: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2"
+                rows="3"
+                placeholder="Description"
+                required
+              />
+
+              <input
+                type="date"
+                value={editingTask.due_date?.split("T")[0]}
+                onChange={(e) =>
+                  setEditingTask({ ...editingTask, due_date: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2"
+                required
+              />
+
+              <select
+                value={editingTask.priority}
+                onChange={(e) =>
+                  setEditingTask({ ...editingTask, priority: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2"
+              >
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={editingTask.isCompleted}
+                  onChange={(e) =>
+                    setEditingTask({
+                      ...editingTask,
+                      isCompleted: e.target.checked,
+                    })
+                  }
+                />
+                <span>Mark as Completed</span>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -170,7 +269,7 @@ export default function TaskList() {
         ))}
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-6">
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
