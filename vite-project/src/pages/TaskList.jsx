@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TaskCard from "../components/TaskCard";
 import { Link } from "react-router-dom";
+import t1 from "../assets/t1.jpg";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -102,53 +103,66 @@ export default function TaskList() {
   };
 
   return (
+    <div>
+      <img
+              src={t1}
+              alt="Background"
+              className="absolute inset-0 w-full h-full object-cover z-[-1]"
+            />
+           
     <div className="p-6">
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 items-center mb-6">
-        <input
-          type="text"
-          placeholder="Search by title..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300 outline-none"
-        />
+      <div className="bg-white shadow-md rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-4">
+  {/* Search */}
+  <input
+    type="text"
+    placeholder="🔍 Search by title..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300 outline-none"
+  />
 
-        <select
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-          className="px-3 py-2 border rounded-lg shadow-sm"
-        >
-          <option value="All">All Priorities</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
+  {/* Priority Filter */}
+  <select
+    value={priorityFilter}
+    onChange={(e) => setPriorityFilter(e.target.value)}
+    className="px-3 py-2 border rounded-lg shadow-sm"
+  >
+    <option value="All">All Priorities</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border rounded-lg shadow-sm"
-        >
-          <option value="All">All Status</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-        </select>
+  {/* Status Filter */}
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    className="px-3 py-2 border rounded-lg shadow-sm"
+  >
+    <option value="All">All Status</option>
+    <option value="Completed">Completed</option>
+    <option value="Pending">Pending</option>
+  </select>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="px-3 py-2 border rounded-lg shadow-sm"
-        >
-          <option value="due_date">Sort by Due Date</option>
-          <option value="priority">Sort by Priority</option>
-        </select>
+  {/* Sort */}
+  <select
+    value={sortBy}
+    onChange={(e) => setSortBy(e.target.value)}
+    className="px-3 py-2 border rounded-lg shadow-sm"
+  >
+    <option value="due_date">Sort by Due Date</option>
+    <option value="priority">Sort by Priority</option>
+  </select>
 
-        <Link to="/AddTask">
-          <button className="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
-            + Add New Task
-          </button>
-        </Link>
-      </div>
+  {/* Add Button */}
+  <Link to="/AddTask" className="ml-auto">
+    <button className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition">
+      + Add New Task
+    </button>
+  </Link>
+</div>
+
 
       {/* Edit Task Modal */}
       {editingTask && (
@@ -274,7 +288,7 @@ export default function TaskList() {
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          className="px-3 py-1 bg-red-200 rounded hover:bg-red-300 "
         >
           Prev
         </button>
@@ -284,11 +298,12 @@ export default function TaskList() {
         <button
           onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          className="px-3 py-1 bg-green-200 rounded hover:bg-green-300 "
         >
           Next
         </button>
       </div>
+    </div>
     </div>
   );
 }

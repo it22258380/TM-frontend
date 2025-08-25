@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Link,useNavigate  } from 'react-router-dom'; 
+import { Link,useNavigate  } from 'react-router-dom';
+import user from '../assets/user.png'; 
+import login from '../assets/login.jpg';
 
 const UserRegister = () => {
   const [formData, setFormData] = useState({
@@ -74,7 +76,7 @@ const navigate = useNavigate();
         password: '',
        
       }); 
-        navigate('/login');
+        navigate('/');
     } catch (err) {
       
       console.error('Error:', err.response ? err.response.data : err.message);
@@ -93,25 +95,36 @@ const navigate = useNavigate();
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-picture">
-      <div className="w-[400px] h-[600px] flex items-center justify-center flex-col relative backdrop-blur-2xl rounded-2xl">
-        
-        
+    
+  <div className="w-full h-screen flex">
+    {/* Left Side - Register Form */}
+    <div className="w-1/2 flex items-center justify-center bg-gray-50">
+      <div className="w-[400px] bg-white backdrop-blur-2xl rounded-2xl shadow-xl p-8">
+        {/* Error / Success Messages */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
+        {successMessage && (
+          <p className="text-green-500 text-center mb-4">{successMessage}</p>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Avatar */}
         <div className="w-full flex justify-center mb-6">
-            <img
-              src="/logo.png"
-              alt="logo"
-              className="w-[100px] h-[100px] rounded-full border-[1px]"
-            />
-          </div>
-          
+          <img
+            src={user}
+            alt="user"
+            className="w-[100px] h-[100px] rounded-full border shadow"
+          />
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* First Name */}
           <div className="flex flex-col">
-          
-            <label htmlFor="firstname" className="text-lg font-medium text-gray-700 mb-2 text-left">First Name</label>
+            <label
+              htmlFor="firstname"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              First Name
+            </label>
             <input
               type="text"
               id="firstname"
@@ -119,12 +132,18 @@ const navigate = useNavigate();
               value={formData.firstname}
               onChange={handleChange}
               placeholder="Enter first name"
-              className="input-field"
+              className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
             />
           </div>
 
+          {/* Last Name */}
           <div className="flex flex-col">
-            <label htmlFor="lastname" className="text-lg font-medium text-gray-700 mb-2 text-left">Last Name</label>
+            <label
+              htmlFor="lastname"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Last Name
+            </label>
             <input
               type="text"
               id="lastname"
@@ -132,12 +151,18 @@ const navigate = useNavigate();
               value={formData.lastname}
               onChange={handleChange}
               placeholder="Enter last name"
-              className="input-field"
+              className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
             />
           </div>
 
+          {/* Email */}
           <div className="flex flex-col">
-            <label htmlFor="email" className="text-lg font-medium text-gray-700 mb-2 text-left">Email</label>
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -145,12 +170,18 @@ const navigate = useNavigate();
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="input-field"
+              className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
             />
           </div>
 
+          {/* Password */}
           <div className="flex flex-col">
-            <label htmlFor="password" className="text-lg font-medium text-gray-700 mb-2 text-left">Password</label>
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Password
+            </label>
             <input
               type="password"
               id="password"
@@ -158,27 +189,38 @@ const navigate = useNavigate();
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter password"
-              className="input-field"
+              className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
             />
           </div>
 
+          {/* Register Button */}
           <div className="flex justify-end">
             <button
               type="submit"
-              className={`w-full px-2 py-1 bg-gray-800 text-sm text-white rounded-md hover:bg-gray-400 focus:outline-none ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition focus:outline-none ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
               disabled={loading}
             >
               {loading ? 'Loading...' : 'Register'}
             </button>
-            
           </div>
-          
-
-       
         </form>
       </div>
     </div>
-  );
+
+    {/* Right Side - Image */}
+    <div className="w-1/2 h-full">
+      <img
+        src={login}
+        alt="Login Illustration"
+        className="w-full h-full object-cover rounded-l-2xl"
+      />
+    </div>
+  </div>
+);
+
 };
+
 
 export default UserRegister;
